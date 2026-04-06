@@ -1,36 +1,46 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# 🌌 Aether Cinema v2.0
 
-## Getting Started
+A premium, immersive shared movie-watching experience with real-time synchronization, interactive reactions, and optimized streaming for low-resource environments.
 
-First, run the development server:
+## 🚀 Quick Start
+
+### 1. Environment Setup
+Copy the example environment file and fill in your secrets:
+```bash
+cp .env.example .env
+```
+> [!IMPORTANT]
+> Ensure `NEXT_PUBLIC_WS_URL` matches your server's accessibility (e.g., `http://your-ip:8010` for production).
+
+### 2. Local Development
+Install dependencies and start both the Next.js app and the WebSocket server concurrently:
+```bash
+npm install
+npm run dev
+```
+Accessible at: `http://localhost:3010`
+
+### 3. Production Deployment (Docker)
+Optimized for **1GB RAM** instances (like Oracle Cloud).
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+docker-compose up -d --build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🛠️ Key Features
+- **Deep Midnight UI**: High-end glassmorphism and ambient cinematic effects.
+- **Immersive Fullscreen Chat**: Slide-out chat panel and floating message bubbles that work in fullscreen.
+- **Synced Reactions**: Floating emojis that appear for all viewers in real-time.
+- **Memory Efficient**: Optimized streaming and build-process specifically for low-RAM servers.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## ⚙️ Environment Variables
+| Variable | Description |
+| :--- | :--- |
+| `STREAM_PASSWORD` | The access code required to join the cinema. |
+| `JWT_SECRET` | Secret key for session security. |
+| `MOVIE_TITLE` | Display name of the movie. |
+| `MOVIE_PATH` | Absolute path to the MP4 file (internal to Docker). |
+| `NEXT_PUBLIC_WS_URL` | The public URL of the WebSocket server. |
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+---
+*Built for the ultimate shared cinematic experience.*

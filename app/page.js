@@ -1,101 +1,66 @@
-import Image from "next/image";
+import LoginForm from "@/components/LoginForm";
 
-export default function Home() {
+export default function HomePage() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.js
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <main className="cinema-bg min-h-screen flex items-center justify-center p-6 relative overflow-hidden">
+      <div className="cinema-bg-overlay" />
+      
+      {/* ── Ambient Background Effects ──────────────── */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-[20%] -left-[10%] w-[70%] h-[70%] rounded-full bg-accent-blue/[0.03] blur-[120px] animate-pulse" />
+        <div className="absolute -bottom-[20%] -right-[10%] w-[60%] h-[60%] rounded-full bg-accent-purple/[0.03] blur-[120px] animate-pulse" style={{ animationDelay: '2s' }} />
+      </div>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+      {/* ── Background Poster (Faded) ───────────────── */}
+      <div
+        className="absolute inset-0 bg-cover bg-center opacity-[0.03] scale-110 blur-sm"
+        style={{ backgroundImage: `url(${process.env.MOVIE_POSTER || "/poster.webp"})` }}
+      />
+
+      {/* ── Login Container ─────────────────────────── */}
+      <div className="relative z-10 w-full max-w-[440px] animate-fade-in">
+        <div className="text-center mb-10">
+          <div className="inline-flex items-center justify-center mb-6">
+            <div className="w-20 h-20 rounded-[2rem] bg-gradient-to-br from-accent-blue via-accent-purple to-accent-pink p-[1.5px] shadow-2xl shadow-accent-blue/20 rotate-3">
+              <div className="w-full h-full rounded-[1.9rem] bg-[#020617] flex items-center justify-center -rotate-3">
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-10 h-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                </svg>
+              </div>
+            </div>
+          </div>
+          
+          <h1 className="text-5xl font-black text-white mb-3 tracking-tighter">
+            AETHER <span className="text-gradient">STREAM</span>
+          </h1>
+          <p className="text-slate-500 font-bold text-xs uppercase tracking-[0.3em]">
+            Private Screening Room
+          </p>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+
+        {/* ── Login Card ────────────────────────────── */}
+        <div className="glass-panel-strong p-10 border-white/[0.05] relative overflow-hidden">
+          {/* Subtle inner glow */}
+          <div className="absolute -top-24 -left-24 w-48 h-48 bg-accent-blue/10 blur-[60px] pointer-events-none" />
+          
+          <div className="relative z-10">
+            <h2 className="text-xl font-black text-white mb-2 tracking-tight">Welcome Back</h2>
+            <p className="text-slate-400 text-sm font-medium mb-8">Enter your credentials to join the session</p>
+            <LoginForm />
+          </div>
+        </div>
+
+        {/* ── Footer ─────────────────────────────────── */}
+        <div className="mt-10 flex flex-col items-center gap-4">
+          <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.03] border border-white/[0.05]">
+            <div className="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]" />
+            <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Server Online</span>
+          </div>
+          <p className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">
+            Invitation Only • Encrypted Stream
+          </p>
+        </div>
+      </div>
+    </main>
   );
 }
