@@ -12,6 +12,7 @@
 # ═══════════════════════════════════════════════════
 
 services:
+  aether-cinema:
     build:
       context: .
       args:
