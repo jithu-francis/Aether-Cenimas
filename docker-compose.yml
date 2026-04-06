@@ -23,12 +23,13 @@ services:
       - "8010:8010"    # Socket.io WebSocket server
     volumes:
       - ./movies:/app/movies:ro
+      - ./poster.webp:/app/public/poster.webp:ro
     environment:
       - STREAM_PASSWORD=${STREAM_PASSWORD:-aether2024}
       - JWT_SECRET=${JWT_SECRET:-change-me-to-a-random-32-char-secret-key}
       - MOVIE_TITLE=${MOVIE_TITLE:-I Am Kathalan}
       - MOVIE_DESCRIPTION=${MOVIE_DESCRIPTION:-A gripping cyber thriller following Vishnu, an engineering graduate who uses his hacking skills for revenge.}
-      - MOVIE_POSTER=${MOVIE_POSTER:-/poster.png}
+      - MOVIE_POSTER=${MOVIE_POSTER:-/poster.webp}
       - MOVIE_PATH=/app/movies/movie.mp4
       - NEXT_PUBLIC_WS_URL=${NEXT_PUBLIC_WS_URL:-http://localhost:8010}
       - WS_PORT=8010

@@ -236,7 +236,11 @@ export default function CinemaClient({ userName }) {
                       <img
                         src={process.env.MOVIE_POSTER || "/poster.webp"}
                         alt="Movie Poster"
-                        className="w-full h-full object-cover rounded-xl shadow-lg"
+                        className="w-full h-full object-cover rounded-xl shadow-lg transition-opacity duration-700"
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = "/poster.webp";
+                        }}
                       />
                     </div>
 
