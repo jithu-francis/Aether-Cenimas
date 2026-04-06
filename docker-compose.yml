@@ -23,7 +23,7 @@ services:
       - "8010:8010"    # Socket.io WebSocket server
     volumes:
       - ./movies:/app/movies:ro
-      - ./poster.webp:/app/public/poster.webp:ro
+      - ./public/poster.webp:/app/public/poster.webp:ro
     environment:
       - STREAM_PASSWORD=${STREAM_PASSWORD:-aether2024}
       - JWT_SECRET=${JWT_SECRET:-change-me-to-a-random-32-char-secret-key}
