@@ -88,14 +88,28 @@
   }
 
   .input-field {
-    @apply w-full bg-white/[0.02] border border-white/10 rounded-xl px-5 py-3.5 text-white placeholder:text-slate-600 outline-none transition-all duration-500;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0.75rem;
+    padding: 0.875rem 1.25rem;
+    color: white;
+    outline: none;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     backdrop-filter: blur(10px);
     box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
   }
+
+  .input-field::placeholder {
+    color: #475569; /* slate-600 */
+    font-weight: 500;
+  }
   
   .input-field:focus {
-    @apply bg-white/[0.05] border-accent-blue/50 ring-4 ring-accent-blue/10;
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(59, 130, 246, 0.5); /* accent-blue/50 */
     box-shadow: 0 0 20px rgba(59, 130, 246, 0.15), inset 0 2px 4px rgba(0, 0, 0, 0.05);
+    transform: scale(1.02);
   }
 
   /* ── Premium Buttons ────────────────────────────── */
