@@ -36,7 +36,8 @@ ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
 # Production optimizations
-RUN addgroup --system --gid 1001 nodejs && \
+RUN apk add --no-cache curl && \
+    addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nextjs
 
 # Copy standalone build (Next.js 12+)
@@ -65,7 +66,7 @@ USER nextjs
 EXPOSE 3000 8010
 
 # Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=20s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:3000 || exit 1
+HEALTHCHECK --interval=15s --timeout=5s --start-period=45s --retries=5 \
+  CMD curl -f http://localhost:3000 || exit 1
 
 CMD ["./start.sh"]
