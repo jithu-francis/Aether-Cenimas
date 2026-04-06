@@ -8,7 +8,12 @@ const httpServer = http.createServer((req, res) => {
   // Health check endpoint
   if (req.url === "/health") {
     res.writeHead(200, { "Content-Type": "application/json" });
-    res.end(JSON.stringify({ status: "ok", uptime: process.uptime() }));
+    res.end(JSON.stringify({ 
+      status: "ok", 
+      uptime: process.uptime(),
+      connections: io.engine.clientsCount,
+      memory: process.memoryUsage()
+    }));
     return;
   }
   res.writeHead(404);
@@ -17,7 +22,7 @@ const httpServer = http.createServer((req, res) => {
 
 const io = new Server(httpServer, {
   cors: {
-    origin: CORS_ORIGIN,
+    origin: CORS_ORIGIN === "*" ? true : CORS_ORIGIN.split(","),
     methods: ["GET", "POST"],
     credentials: true,
   },
