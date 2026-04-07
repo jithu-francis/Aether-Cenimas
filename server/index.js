@@ -16,8 +16,12 @@ const httpServer = http.createServer((req, res) => {
     }));
     return;
   }
-  res.writeHead(404);
-  res.end();
+
+  // Only return 404 if it's not a socket.io request
+  if (!req.url.startsWith("/socket.io")) {
+    res.writeHead(404);
+    res.end();
+  }
 });
 
 const io = new Server(httpServer, {
