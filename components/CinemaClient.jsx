@@ -117,24 +117,24 @@ export default function CinemaClient({ userName }) {
       <div className="cinema-bg-overlay" />
       
       {/* ── Premium Top Bar ─────────────────────────── */}
-      <header className="relative z-30 flex items-center justify-between px-6 py-6 border-b border-white/[0.03]">
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-accent-blue via-accent-purple to-accent-pink p-[1px] shadow-lg shadow-accent-blue/20">
-            <div className="w-full h-full rounded-[15px] bg-[#020617] flex items-center justify-center">
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+      <header className="relative z-30 flex items-center justify-between px-3 py-3 sm:px-6 sm:py-5 border-b border-white/[0.03]">
+        <div className="flex items-center gap-2.5 sm:gap-4">
+          <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-gradient-to-br from-accent-blue via-accent-purple to-accent-pink p-[1px] shadow-lg shadow-accent-blue/20">
+            <div className="w-full h-full rounded-[10px] sm:rounded-[15px] bg-[#020617] flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 sm:w-6 sm:h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
               </svg>
             </div>
           </div>
           <div>
-            <h1 className="text-xl font-black text-white tracking-tighter">
+            <h1 className="text-base sm:text-xl font-black text-white tracking-tighter">
               AETHER <span className="text-gradient">STREAM</span>
             </h1>
-            <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Private Cinema v2.0</p>
+            <p className="text-[8px] sm:text-[10px] font-black text-slate-500 uppercase tracking-[0.15em] sm:tracking-[0.2em]">Private Cinema v2.0</p>
           </div>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 sm:gap-4">
           {/* User badge */}
           <div className="hidden sm:flex items-center gap-3 glass-panel px-4 py-2 rounded-2xl border-white/5">
             <div className="w-7 h-7 rounded-xl bg-gradient-to-br from-accent-blue to-accent-purple flex items-center justify-center text-white text-xs font-black shadow-inner">
@@ -146,17 +146,17 @@ export default function CinemaClient({ userName }) {
           {/* Chat toggle */}
           <button
             onClick={() => setChatOpen(!chatOpen)}
-            className={`p-3 rounded-2xl transition-all duration-500 relative border ${
+            className={`p-2.5 sm:p-3 rounded-xl sm:rounded-2xl transition-all duration-500 relative border ${
               chatOpen
                 ? "bg-accent-blue/10 text-accent-blue border-accent-blue/30 glow-blue"
                 : "bg-white/[0.03] border-white/5 text-slate-400 hover:text-white hover:bg-white/10"
             }`}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
             </svg>
             {messages.length > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 h-5 min-w-[20px] px-1.5 bg-accent-pink rounded-full text-[10px] flex items-center justify-center text-white font-black border-2 border-[#020617] animate-bounce">
+              <span className="absolute -top-1 -right-1 h-4 min-w-[16px] sm:h-5 sm:min-w-[20px] px-1 sm:px-1.5 bg-accent-pink rounded-full text-[8px] sm:text-[10px] flex items-center justify-center text-white font-black border-2 border-[#020617] animate-bounce">
                 {messages.length > 9 ? "9+" : messages.length}
               </span>
             )}
@@ -165,10 +165,10 @@ export default function CinemaClient({ userName }) {
           {/* Logout */}
           <button
             onClick={handleLogout}
-            className="p-3 rounded-2xl bg-white/[0.03] border border-white/5 text-slate-500 hover:text-red-400 hover:bg-red-500/10 hover:border-red-500/30 transition-all duration-300"
+            className="p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-white/[0.03] border border-white/5 text-slate-500 hover:text-red-400 hover:bg-red-500/10 hover:border-red-500/30 transition-all duration-300"
             title="Leave Cinema"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
             </svg>
           </button>
@@ -176,13 +176,13 @@ export default function CinemaClient({ userName }) {
       </header>
 
       {/* ── Main Content ────────────────────────────── */}
-      <main className="relative z-10 max-w-[1400px] mx-auto px-6 py-8">
-        <div className="flex flex-col lg:flex-row gap-8">
+      <main className="relative z-10 max-w-[1400px] mx-auto px-3 py-4 sm:px-6 sm:py-8">
+        <div className="flex flex-col lg:flex-row gap-4 sm:gap-8">
           {/* Left: Player + Info */}
-          <div className="flex-1 space-y-8 min-w-0">
+          <div className="flex-1 space-y-4 sm:space-y-8 min-w-0">
             {/* Video Player */}
-            <div className="relative group p-[2px] rounded-3xl bg-gradient-to-br from-white/10 to-transparent">
-              <div className="rounded-[22px] overflow-hidden bg-black/40 backdrop-blur-3xl shadow-2xl">
+            <div className="relative group p-[1px] sm:p-[2px] rounded-2xl sm:rounded-3xl bg-gradient-to-br from-white/10 to-transparent">
+              <div className="rounded-[14px] sm:rounded-[22px] overflow-hidden bg-black/40 backdrop-blur-3xl shadow-2xl">
                 <VideoPlayer
                   playerRef={playerRef}
                   onPlay={handlePlay}
@@ -212,54 +212,72 @@ export default function CinemaClient({ userName }) {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-8 items-start">
               {/* Controls and Movie Details */}
-              <div className="md:col-span-8 space-y-8">
+              <div className="md:col-span-8 space-y-4 sm:space-y-8">
                 {/* Controls Bar */}
-                <div className="flex flex-col sm:flex-row items-center justify-between gap-6 glass-panel p-6 border-white/[0.05]">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-6 glass-panel p-4 sm:p-6 border-white/[0.05]">
                   <SyncControls
                     isSynced={isSynced}
                     onInitSync={handleInitSync}
                     onStopSync={handleStopSync}
                   />
 
-                  <div className="flex items-center gap-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap">
-                    <div className={`w-2 h-2 rounded-full ${isSynced ? 'bg-accent-blue animate-pulse' : 'bg-slate-700'}`} />
-                    {isSynced ? "Real-time sync active" : "Synchronization inactive"}
+                  <div className="flex items-center gap-2 sm:gap-3 text-[9px] sm:text-[10px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap justify-center sm:justify-end">
+                    <div className={`w-2 h-2 rounded-full flex-shrink-0 ${isSynced ? 'bg-accent-blue animate-pulse' : 'bg-slate-700'}`} />
+                    {isSynced ? "Real-time sync active" : "Sync inactive"}
                   </div>
                 </div>
 
                 {/* Movie Info Card */}
-                <div className="glass-panel p-8 border-white/[0.05]">
-                  <div className="flex flex-col sm:flex-row gap-8">
-                    <div className="w-full sm:w-40 h-60 sm:h-auto rounded-2xl overflow-hidden flex-shrink-0 bg-white/5 p-1">
-                      <img
-                        src={process.env.MOVIE_POSTER || "/poster.webp"}
-                        alt="Movie Poster"
-                        className="w-full h-full object-cover rounded-xl shadow-lg transition-opacity duration-700"
-                        onError={(e) => {
-                          e.target.onerror = null;
-                          e.target.src = "/poster.webp";
-                        }}
-                      />
+                <div className="glass-panel p-5 sm:p-8 border-white/[0.05] overflow-hidden">
+                  <div className="flex flex-col sm:flex-row gap-6 sm:gap-10">
+                    {/* Poster with dynamic scaling */}
+                    <div className="w-full sm:w-48 lg:w-64 flex-shrink-0 group/poster relative shadow-2xl">
+                      <div className="aspect-[2/3] w-full bg-white/5 rounded-2xl overflow-hidden border border-white/10 p-1">
+                        <img
+                          src={process.env.MOVIE_POSTER || "/poster.webp"}
+                          alt="Movie Poster"
+                          className="w-full h-full object-cover rounded-xl transition-transform duration-1000 group-hover/poster:scale-110"
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = "/poster.webp";
+                          }}
+                        />
+                        {/* Now Showing Badge */}
+                        <div className="absolute top-4 left-4 glass-panel px-2.5 py-1.5 border-white/10 flex items-center gap-2 backdrop-blur-xl shadow-lg">
+                          <div className="w-1.5 h-1.5 rounded-full bg-accent-blue animate-pulse shadow-[0_0_8px_rgba(59,130,246,0.8)]" />
+                          <span className="text-[9px] font-black text-white tracking-[0.15em] uppercase">Now Showing</span>
+                        </div>
+                      </div>
                     </div>
 
-                    <div className="flex-1">
-                      <h2 className="text-3xl font-black text-white mb-4 tracking-tight leading-tight">
-                        {process.env.MOVIE_TITLE || "I Am Kathalan"}
-                      </h2>
-                      <div className="flex items-center gap-3 mb-6 flex-wrap">
-                        <span className="text-[10px] font-black bg-accent-blue/10 text-accent-blue px-3 py-1.5 rounded-lg border border-accent-blue/20 tracking-tighter">2024</span>
-                        <span className="text-[10px] font-black bg-accent-purple/10 text-accent-purple px-3 py-1.5 rounded-lg border border-accent-purple/20 tracking-tighter">MALAYALAM</span>
-                        <span className="text-[10px] font-black bg-accent-pink/10 text-accent-pink px-3 py-1.5 rounded-lg border border-accent-pink/20 tracking-tighter">CYBER THRILLER</span>
+                    <div className="flex-1 min-w-0 flex flex-col justify-center">
+                      <div className="mb-4">
+                        <h2 className="text-2xl sm:text-4xl font-black text-white mb-3 tracking-tighter leading-none text-gradient block sm:inline-block">
+                          {process.env.MOVIE_TITLE || "I Am Kathalan"}
+                        </h2>
+                        <div className="flex items-center gap-2.5 flex-wrap">
+                          <span className="px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-[10px] font-black text-slate-400 tracking-wider">2024</span>
+                          <span className="px-2.5 py-1 rounded-lg bg-accent-blue/10 border border-accent-blue/20 text-[10px] font-black text-accent-blue tracking-wider">MALAYALAM</span>
+                          <span className="px-2.5 py-1 rounded-lg bg-accent-purple/10 border border-accent-purple/20 text-[10px] font-black text-accent-purple tracking-wider">CYBER THRILLER</span>
+                        </div>
                       </div>
-                      <p className="text-sm font-medium text-slate-400 leading-relaxed max-w-2xl">
+
+                      <p className="text-sm sm:text-base font-medium text-slate-400 leading-relaxed max-w-2xl mb-6 italic border-l-2 border-white/5 pl-4">
                         {process.env.MOVIE_DESCRIPTION || "A gripping cyber thriller following Vishnu, an engineering graduate who uses his hacking skills for revenge against his ex-girlfriend's powerful father."}
                       </p>
-                      <div className="mt-8 flex items-center gap-6 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                        <span>Director: Girish A.D.</span>
-                        <span className="w-1 h-1 rounded-full bg-slate-800" />
-                        <span>Naslen, Lijomol Jose</span>
+
+                      <div className="flex items-center gap-4 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] flex-wrap">
+                        <div className="flex items-center gap-2">
+                          <span className="text-white/20">DIR</span>
+                          <span className="text-slate-300">Girish A.D.</span>
+                        </div>
+                        <div className="w-1 h-1 rounded-full bg-white/10" />
+                        <div className="flex items-center gap-2">
+                          <span className="text-white/20">CAST</span>
+                          <span className="text-slate-300">Naslen, Lijomol Jose</span>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -267,16 +285,16 @@ export default function CinemaClient({ userName }) {
               </div>
 
               {/* Sidebar: Reactions & Viewers List */}
-              <div className="md:col-span-4 space-y-6">
-                {/* Desktop Reaction Bar */}
-                <div className="glass-panel p-6 border-white/[0.05] hidden md:block">
-                  <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-6">Send Reaction</h3>
-                  <div className="grid grid-cols-4 gap-3">
+              <div className="md:col-span-4 space-y-4 sm:space-y-6">
+                {/* Desktop/Tablet Reaction Bar */}
+                <div className="glass-panel p-4 sm:p-6 border-white/[0.05]">
+                  <h3 className="text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-widest mb-4 sm:mb-6">Send Reaction</h3>
+                  <div className="grid grid-cols-4 gap-2 sm:gap-3">
                     {["❤️", "😂", "😮", "🔥", "🚀", "👏", "💯", "😢"].map(emoji => (
                       <button
                         key={emoji}
                         onClick={() => sendReaction(emoji)}
-                        className="reaction-btn text-xl aspect-square flex items-center justify-center p-0"
+                        className="reaction-btn text-lg sm:text-xl aspect-square flex items-center justify-center p-0"
                       >
                         {emoji}
                       </button>

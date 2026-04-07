@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import Artplayer from "artplayer";
 
 export default function VideoPlayer({
@@ -17,6 +17,7 @@ export default function VideoPlayer({
   const [isReady, setIsReady] = useState(false);
   const lastSeekTime = useRef(0);
   const seekDebounce = useRef(null);
+  const toggleFsRef = useRef(null);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -36,7 +37,7 @@ export default function VideoPlayer({
       flip: false,
       playbackRate: true,
       aspectRatio: true,
-      fullscreen: false,     // Disable built-in — we handle it ourselves
+      fullscreen: false,     // Disable built-in
       fullscreenWeb: false,  // Disable built-in
       subtitleOffset: false,
       miniProgressBar: true,
@@ -54,7 +55,6 @@ export default function VideoPlayer({
         preload: "auto",
       },
       controls: [
-        // ── Backward 10s ────────────────────────
         {
           name: "backward",
           position: "left",
@@ -65,7 +65,6 @@ export default function VideoPlayer({
             art.currentTime = Math.max(0, art.currentTime - 10);
           },
         },
-        // ── Forward 10s ─────────────────────────
         {
           name: "forward",
           position: "left",
@@ -73,13 +72,9 @@ export default function VideoPlayer({
           html: `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 17l5-5-5-5"/><text x="3" y="16" font-size="8" fill="currentColor" stroke="none" font-weight="bold">10</text></svg>`,
           tooltip: "Forward 10s",
           click: function () {
-            art.currentTime = Math.min(
-              art.duration,
-              art.currentTime + 10
-            );
+            art.currentTime = Math.min(art.duration, art.currentTime + 10);
           },
         },
-        // ── Custom Fullscreen (targets wrapper) ─
         {
           name: "fullscreen",
           position: "right",
@@ -95,28 +90,45 @@ export default function VideoPlayer({
 
     artInstance.current = art;
 
-    // ── Fullscreen handler (on wrapper div) ──────
     function toggleFullscreen() {
       const wrapper = wrapperRef.current;
-      if (!wrapper) return;
+      const video = art.video;
+      if (!wrapper || !video) return;
 
-      if (document.fullscreenElement) {
-        document.exitFullscreen();
+      if (document.fullscreenElement || document.webkitFullscreenElement) {
+        if (document.exitFullscreen) document.exitFullscreen();
+        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
       } else {
-        wrapper.requestFullscreen().catch(() => {
-          // Fallback: use web fullscreen (CSS-based)
-          wrapper.classList.toggle("art-fullscreen-web");
+        const promise = wrapper.requestFullscreen?.() || wrapper.webkitRequestFullscreen?.();
+        promise?.catch(() => {
+          if (video.webkitEnterFullscreen) {
+            video.webkitEnterFullscreen();
+          } else {
+            wrapper.classList.toggle("art-fullscreen-web");
+          }
         });
       }
     }
 
-    // Listen for native fullscreen changes
-    function handleFsChange() {
-      const isFs = !!document.fullscreenElement;
-      if (onFullscreenChange) {
-        onFullscreenChange(isFs);
+    toggleFsRef.current = toggleFullscreen;
+
+    let clickTimer = null;
+    art.on('click', (e) => {
+      if (e.target.closest('.art-controls') || e.target.closest('.art-setting')) return;
+      if (clickTimer) {
+        clearTimeout(clickTimer);
+        clickTimer = null;
+        toggleFullscreen();
+      } else {
+        clickTimer = setTimeout(() => {
+          clickTimer = null;
+        }, 300);
       }
-      // Update wrapper styling
+    });
+
+    function handleFsChange() {
+      const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement);
+      if (onFullscreenChange) onFullscreenChange(isFs);
       if (wrapperRef.current) {
         if (isFs) {
           wrapperRef.current.style.width = "100vw";
@@ -129,56 +141,41 @@ export default function VideoPlayer({
     }
 
     document.addEventListener("fullscreenchange", handleFsChange);
+    document.addEventListener("webkitfullscreenchange", handleFsChange);
 
-    // Expose video element for sync
     art.on("ready", () => {
       setIsReady(true);
-      if (playerRef) {
-        playerRef.current = art.video;
-      }
+      if (playerRef) playerRef.current = art.video;
     });
 
-    // ── Play event ──────────────────────────────
     art.on("play", () => {
-      if (onPlay && art.video) {
-        onPlay(art.video.currentTime);
-      }
+      if (onPlay && art.video) onPlay(art.video.currentTime);
     });
 
-    // ── Pause event ─────────────────────────────
     art.on("pause", () => {
-      if (onPause && art.video) {
-        onPause(art.video.currentTime);
-      }
+      if (onPause && art.video) onPause(art.video.currentTime);
     });
 
-    // ── Seek event (debounced) ──────────────────
     art.on("seek", (time) => {
       if (!onSeek) return;
       clearTimeout(seekDebounce.current);
       seekDebounce.current = setTimeout(() => {
-        if (Math.abs(time - lastSeekTime.current) > 1) {
+        if (Math.abs(time - lastSeekTime.current) > 0.5) {
           lastSeekTime.current = time;
           onSeek(time);
         }
       }, 300);
     });
 
-    // ── Keyboard shortcuts for forward/backward ─
     function handleKeyDown(e) {
-      if (
-        document.activeElement?.tagName === "INPUT" ||
-        document.activeElement?.tagName === "TEXTAREA"
-      )
-        return;
-
+      if (document.activeElement?.tagName === "INPUT" || document.activeElement?.tagName === "TEXTAREA") return;
       if (e.key === "ArrowRight") {
         e.preventDefault();
         art.currentTime = Math.min(art.duration, art.currentTime + 10);
       } else if (e.key === "ArrowLeft") {
         e.preventDefault();
         art.currentTime = Math.max(0, art.currentTime - 10);
-      } else if (e.key === "f" || e.key === "F") {
+      } else if (e.key.toLowerCase() === "f") {
         e.preventDefault();
         toggleFullscreen();
       }
@@ -189,12 +186,11 @@ export default function VideoPlayer({
     return () => {
       clearTimeout(seekDebounce.current);
       document.removeEventListener("fullscreenchange", handleFsChange);
+      document.removeEventListener("webkitfullscreenchange", handleFsChange);
       document.removeEventListener("keydown", handleKeyDown);
-      if (art && art.destroy) {
-        art.destroy(false);
-      }
+      if (art && art.destroy) art.destroy(false);
     };
-  }, []);
+  }, [onPlay, onPause, onSeek, playerRef, onFullscreenChange]);
 
   return (
     <div
@@ -203,7 +199,6 @@ export default function VideoPlayer({
       style={{ aspectRatio: "16/9" }}
       id="player-wrapper"
     >
-      {/* Loading skeleton */}
       {!isReady && (
         <div className="absolute inset-0 bg-midnight-50 rounded-xl flex items-center justify-center z-10">
           <div className="flex flex-col items-center gap-3">
@@ -212,15 +207,7 @@ export default function VideoPlayer({
           </div>
         </div>
       )}
-
-      {/* ArtPlayer container */}
-      <div
-        ref={containerRef}
-        className="w-full h-full"
-        id="artplayer-container"
-      />
-
-      {/* Fullscreen overlay (inside wrapper, so it's visible in fullscreen) */}
+      <div ref={containerRef} className="w-full h-full" id="artplayer-container" />
       {children}
     </div>
   );

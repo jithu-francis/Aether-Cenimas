@@ -1,7 +1,5 @@
 "use client";
 
-import { memo } from "react";
-
 const EMOJIS = ["❤️", "😂", "😮", "😢", "🔥", "🚀", "👏", "💯"];
 
 export default function ReactionSystem({ reactions, onSendReaction, showBar = true }) {
@@ -19,18 +17,16 @@ export default function ReactionSystem({ reactions, onSendReaction, showBar = tr
               '--tw-rotate': `${r.rotation}deg`
             }}
           >
-            <div className="relative group flex flex-col items-center">
-              {/* The Name Tag — Always visible but with a subtle entry */}
-              <div 
-                className="mb-2 px-3 py-1 rounded-full glass-panel-strong border-white/20 shadow-2xl animate-in fade-in zoom-in duration-500 fill-mode-forwards"
-              >
-                <span className="text-[10px] font-black uppercase tracking-[0.2em] bg-clip-text text-transparent bg-gradient-to-r from-accent-blue via-accent-purple to-accent-cyan whitespace-nowrap">
+            <div className="relative flex flex-col items-center">
+              {/* Sender name tag */}
+              <div className="mb-1.5 px-2.5 py-0.5 rounded-full bg-black/50 backdrop-blur-md border border-white/10 shadow-xl">
+                <span className="text-[9px] font-black uppercase tracking-[0.15em] bg-clip-text text-transparent bg-gradient-to-r from-accent-blue via-accent-purple to-accent-cyan whitespace-nowrap">
                   {r.from}
                 </span>
               </div>
 
-              {/* The Emoji — Large and Glowing */}
-              <div className="text-5xl drop-shadow-[0_0_15px_rgba(255,255,255,0.3)] filter brightness-110 saturate-150 transition-transform duration-300 hover:scale-125">
+              {/* The Emoji */}
+              <div className="text-4xl sm:text-5xl drop-shadow-[0_0_12px_rgba(255,255,255,0.25)] filter brightness-110 saturate-150">
                 {r.emoji}
               </div>
             </div>
@@ -38,19 +34,21 @@ export default function ReactionSystem({ reactions, onSendReaction, showBar = tr
         ))}
       </div>
 
-      {/* ── Reaction Bar (Interactive) ─────────────── */}
+      {/* ── Reaction Bar (non-fullscreen desktop/mobile) ─── */}
       {showBar && (
-        <div className="absolute bottom-20 left-1/2 -translate-x-1/2 flex items-center gap-2 px-4 py-2 rounded-2xl glass-panel-strong pointer-events-auto animate-slide-up">
-          {EMOJIS.map((emoji) => (
-            <button
-              key={emoji}
-              onClick={() => onSendReaction(emoji)}
-              className="reaction-btn text-2xl"
-              title={`Send ${emoji}`}
-            >
-              {emoji}
-            </button>
-          ))}
+        <div className="absolute bottom-20 left-1/2 -translate-x-1/2 pointer-events-auto">
+          <div className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-2xl bg-black/60 backdrop-blur-xl border border-white/10 shadow-2xl">
+            {EMOJIS.map((emoji) => (
+              <button
+                key={emoji}
+                onClick={() => onSendReaction(emoji)}
+                className="reaction-btn text-xl sm:text-2xl"
+                title={`Send ${emoji}`}
+              >
+                {emoji}
+              </button>
+            ))}
+          </div>
         </div>
       )}
     </div>

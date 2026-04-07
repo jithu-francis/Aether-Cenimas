@@ -45,15 +45,27 @@ COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
 
-# Copy custom server
+# Copy custom server (socket.io server)
 COPY --from=builder /app/server ./server
 
-# Note: Standalone mode doesn't include the custom server dependencies by default 
-# if they are not imported in the Next.js app. We'll copy them manually or 
-# assume they are in the node_modules within standalone.
-# Actually, we can just use the server/index.js with existing node_modules.
+# Socket.io deps — standalone build doesn't trace server/index.js imports,
+# so we copy the required packages explicitly for the socket container.
+COPY --from=deps /app/node_modules/socket.io ./node_modules/socket.io
+COPY --from=deps /app/node_modules/@socket.io ./node_modules/@socket.io
+COPY --from=deps /app/node_modules/engine.io ./node_modules/engine.io
+COPY --from=deps /app/node_modules/engine.io-parser ./node_modules/engine.io-parser
+COPY --from=deps /app/node_modules/socket.io-adapter ./node_modules/socket.io-adapter
+COPY --from=deps /app/node_modules/socket.io-parser ./node_modules/socket.io-parser
+COPY --from=deps /app/node_modules/ws ./node_modules/ws
+COPY --from=deps /app/node_modules/cors ./node_modules/cors
+COPY --from=deps /app/node_modules/debug ./node_modules/debug
+COPY --from=deps /app/node_modules/ms ./node_modules/ms
+COPY --from=deps /app/node_modules/base64id ./node_modules/base64id
+COPY --from=deps /app/node_modules/cookie ./node_modules/cookie
+COPY --from=deps /app/node_modules/vary ./node_modules/vary
+COPY --from=deps /app/node_modules/object-assign ./node_modules/object-assign
 
-# Copy start script
+# Copy start script (frontend entrypoint)
 COPY start.sh ./start.sh
 RUN chmod +x ./start.sh
 
@@ -63,10 +75,12 @@ RUN mkdir -p /app/movies && \
 
 USER nextjs
 
+# Frontend exposes 3000, socket container exposes 8010
 EXPOSE 3000 8010
 
-# Health check
+# Default health check targets the frontend
 HEALTHCHECK --interval=15s --timeout=5s --start-period=45s --retries=5 \
   CMD curl -f http://localhost:3000 || exit 1
 
+# Default: start frontend. Socket container overrides via docker-compose command.
 CMD ["./start.sh"]
