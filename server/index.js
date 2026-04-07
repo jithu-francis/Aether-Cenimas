@@ -32,28 +32,55 @@ let syncState = { active: false, masterTime: 0, isPlaying: false };
 
 io.on("connection", (socket) => {
   socket.on("viewer:join", (data) => {
-    viewers.set(socket.id, { name: data.name || "Guest", joinedAt: new Date() });
+    const name = data.name || "Guest";
+    viewers.set(socket.id, { name, joinedAt: new Date() });
+    console.log(`[Join] ${name} (${socket.id}) - Total: ${viewers.size}`);
     broadcastViewers();
   });
 
   socket.on("sync:initiate", (data) => {
-    syncState = { active: true, masterTime: data.time, isPlaying: data.isPlaying };
+    const v = viewers.get(socket.id);
+    const name = v?.name || "Someone";
+    syncState = { 
+      active: true, 
+      masterTime: data.time, 
+      isPlaying: data.isPlaying,
+      initiatedBy: name
+    };
+    console.log(`[Sync Start] by ${name} at ${data.time}s`);
     io.emit("sync:state", syncState);
   });
 
+  socket.on("sync:stop", () => {
+    const v = viewers.get(socket.id);
+    const name = v?.name || "Someone";
+    syncState.active = false;
+    console.log(`[Sync Stop] by ${name}`);
+    io.emit("sync:state", { ...syncState, stoppedBy: name });
+  });
+
   socket.on("sync:play", (data) => {
+    const v = viewers.get(socket.id);
+    const name = v?.name || "Someone";
     syncState.isPlaying = true;
-    socket.broadcast.emit("sync:play", data);
+    console.log(`[Sync Play] by ${name}`);
+    socket.broadcast.emit("sync:play", { ...data, name });
   });
 
   socket.on("sync:pause", (data) => {
+    const v = viewers.get(socket.id);
     syncState.isPlaying = false;
-    socket.broadcast.emit("sync:pause", data);
+    socket.broadcast.emit("sync:pause", { ...data, name: v?.name || "Someone" });
   });
 
   socket.on("sync:seek", (data) => {
+    const v = viewers.get(socket.id);
     syncState.masterTime = data.time;
-    socket.broadcast.emit("sync:seek", data);
+    socket.broadcast.emit("sync:seek", { ...data, name: v?.name || "Someone" });
+  });
+
+  socket.on("sync:request-state", () => {
+    socket.emit("sync:state", syncState);
   });
 
   socket.on("chat:message", (data) => {

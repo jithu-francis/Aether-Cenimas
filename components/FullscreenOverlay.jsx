@@ -12,19 +12,19 @@ function FloatingMessage({ message, onExpire }) {
     const timer = setTimeout(() => {
       setVisible(false);
       setTimeout(onExpire, 500);
-    }, 4000);
+    }, 4500);
     return () => clearTimeout(timer);
   }, [onExpire]);
 
   return (
     <div
-      className={`transition-all duration-500 max-w-[260px] ${
-        visible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2 scale-90"
+      className={`transition-all duration-700 ease-out max-w-[280px] sm:max-w-[320px] ${
+        visible ? "opacity-100 translate-x-0 scale-100" : "opacity-0 -translate-x-4 scale-95 blur-sm"
       }`}
     >
-      <div className="floating-bubble inline-flex items-center gap-2">
-        <span className="font-bold text-accent-blue/90">{message.name}</span>
-        <span className="text-white/80">{message.text}</span>
+      <div className="glass-panel px-4 py-2.5 rounded-2xl border-white/10 backdrop-blur-2xl shadow-2xl flex flex-col gap-0.5">
+        <span className="text-[10px] font-black uppercase tracking-widest text-accent-blue/90">{message.name}</span>
+        <span className="text-sm font-medium text-white/90 leading-tight">{message.text}</span>
       </div>
     </div>
   );

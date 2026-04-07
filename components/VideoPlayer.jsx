@@ -54,6 +54,7 @@ export default function VideoPlayer({
         crossOrigin: "anonymous",
         preload: "auto",
       },
+      click: false, // Disable default play/pause on click
       controls: [
         {
           name: "backward",
@@ -114,15 +115,21 @@ export default function VideoPlayer({
 
     let clickTimer = null;
     art.on('click', (e) => {
+      // Ignore clicks on controls area
       if (e.target.closest('.art-controls') || e.target.closest('.art-setting')) return;
+      
       if (clickTimer) {
+        // Double click/tap detected
         clearTimeout(clickTimer);
         clickTimer = null;
         toggleFullscreen();
       } else {
         clickTimer = setTimeout(() => {
           clickTimer = null;
-        }, 300);
+          // Single click: Toggle playback
+          if (art.playing) art.pause();
+          else art.play();
+        }, 250); // Faster response
       }
     });
 
@@ -195,8 +202,8 @@ export default function VideoPlayer({
   return (
     <div
       ref={wrapperRef}
-      className="relative w-full bg-black rounded-xl overflow-hidden"
-      style={{ aspectRatio: "16/9" }}
+      className="relative w-full bg-black rounded-xl overflow-hidden shadow-2xl"
+      style={{ aspectRatio: "16/9", touchAction: "manipulation" }}
       id="player-wrapper"
     >
       {!isReady && (

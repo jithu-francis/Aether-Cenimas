@@ -56,12 +56,14 @@ export default function CinemaClient({ userName }) {
     return () => disconnectSocket();
   }, [userName]);
 
-  // Clear data when sync stops (ephemeral requirement)
+  // Always start fresh on sync START
+  const prevSynced = useRef(false);
   useEffect(() => {
-    if (!isSynced) {
+    if (isSynced && !prevSynced.current) {
       clearMessages();
       clearReactions();
     }
+    prevSynced.current = isSynced;
   }, [isSynced, clearMessages, clearReactions]);
 
   // Player callbacks
