@@ -6,7 +6,7 @@ const nextConfig = {
     MOVIE_DESCRIPTION:
       process.env.MOVIE_DESCRIPTION ||
       "A gripping cyber thriller following Vishnu, an engineering graduate who uses his hacking skills for revenge against his ex-girlfriend's powerful father — only to find himself trapped in a dangerous game with devastating consequences.",
-    MOVIE_POSTER: process.env.MOVIE_POSTER || "/poster.png",
+    MOVIE_POSTER: process.env.MOVIE_POSTER || "/poster.webp",
   },
   experimental: {
     serverComponentsExternalPackages: ["artplayer"],

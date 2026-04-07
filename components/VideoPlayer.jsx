@@ -113,13 +113,35 @@ export default function VideoPlayer({
 
     toggleFsRef.current = toggleFullscreen;
 
+    // --- Mobile Double-Tap (Direct touch detection) ---
+    const container = containerRef.current;
+    let lastTapTime = 0;
+    
+    const handleTouchStart = (e) => {
+      const now = Date.now();
+      const DOUBLE_TAP_DELAY = 300;
+      
+      if (now - lastTapTime < DOUBLE_TAP_DELAY) {
+        // Double tap confirmed: stop propagation and toggle fullscreen
+        e.preventDefault();
+        toggleFullscreen();
+        lastTapTime = 0; // Reset
+      } else {
+        lastTapTime = now;
+      }
+    };
+
+    if (container) {
+      container.addEventListener('touchstart', handleTouchStart, { passive: false });
+    }
+
     let clickTimer = null;
     art.on('click', (e) => {
       // Ignore clicks on controls area
       if (e.target.closest('.art-controls') || e.target.closest('.art-setting')) return;
       
       if (clickTimer) {
-        // Double click/tap detected
+        // Double click/tap detected (Desktop fallback)
         clearTimeout(clickTimer);
         clickTimer = null;
         toggleFullscreen();
@@ -129,7 +151,7 @@ export default function VideoPlayer({
           // Single click: Toggle playback
           if (art.playing) art.pause();
           else art.play();
-        }, 250); // Faster response
+        }, 280); 
       }
     });
 
@@ -192,6 +214,9 @@ export default function VideoPlayer({
 
     return () => {
       clearTimeout(seekDebounce.current);
+      if (container) {
+        container.removeEventListener('touchstart', handleTouchStart);
+      }
       document.removeEventListener("fullscreenchange", handleFsChange);
       document.removeEventListener("webkitfullscreenchange", handleFsChange);
       document.removeEventListener("keydown", handleKeyDown);

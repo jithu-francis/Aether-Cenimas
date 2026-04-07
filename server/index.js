@@ -69,14 +69,18 @@ io.on("connection", (socket) => {
 
   socket.on("sync:pause", (data) => {
     const v = viewers.get(socket.id);
+    const name = v?.name || "Someone";
     syncState.isPlaying = false;
-    socket.broadcast.emit("sync:pause", { ...data, name: v?.name || "Someone" });
+    console.log(`[Sync Pause] by ${name}`);
+    socket.broadcast.emit("sync:pause", { ...data, name });
   });
 
   socket.on("sync:seek", (data) => {
     const v = viewers.get(socket.id);
+    const name = v?.name || "Someone";
     syncState.masterTime = data.time;
-    socket.broadcast.emit("sync:seek", { ...data, name: v?.name || "Someone" });
+    console.log(`[Sync Seek] by ${name} to ${data.time}s`);
+    socket.broadcast.emit("sync:seek", { ...data, name });
   });
 
   socket.on("sync:request-state", () => {
@@ -85,7 +89,19 @@ io.on("connection", (socket) => {
 
   socket.on("chat:message", (data) => {
     const v = viewers.get(socket.id);
+    console.log(`[Chat] ${v?.name || "Guest"}: ${data.text}`);
     io.emit("chat:message", { name: v?.name || "Guest", text: data.text });
+  });
+
+  socket.on("reaction:send", (data) => {
+    const v = viewers.get(socket.id);
+    const name = v?.name || "Someone";
+    const reaction = {
+      id: `react-${socket.id}-${Date.now()}`,
+      emoji: data.emoji,
+      from: name,
+    };
+    io.emit("reaction:receive", reaction);
   });
 
   socket.on("disconnect", () => {
