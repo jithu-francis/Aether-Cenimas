@@ -121,42 +121,63 @@ export default function VideoPlayer({
 
     toggleFsRef.current = toggleFullscreen;
 
-    // --- Refined Gesture Handling (Optimized for iPhone/iOS) ---
+    // --- Refined Gesture Handling (Optimized for iPhone/Android) ---
     let lastTapTime = 0;
     let tapTimeout = null;
 
     const handleTap = (e) => {
-      // Ignore taps on controls, settings, or chat
-      if (e.target.closest('.art-controls') || e.target.closest('.art-setting') || e.target.closest('.art-mask') || e.target.closest('#chat-drawer')) return;
+      // Ignore taps on specific UI elements like controls, settings, or chat drawers
+      // We removed '.art-mask' from this list because the mask is the main area where users tap the video.
+      if (e.target.closest('.art-controls') || e.target.closest('.art-setting') || e.target.closest('#chat-drawer')) return;
       
       const now = Date.now();
       const DOUBLE_TAP_DELAY = 300;
+      const EVENT_IGNORE_WINDOW = 50; // Ignore overlapping touch/click events (touchstart + click)
 
-      if (now - lastTapTime < DOUBLE_TAP_DELAY) {
-        // Double tap confirmed
+      // If this event is firing immediately after a previous one (e.g. touchstart then click), ignore it
+      if (now - lastTapTime < EVENT_IGNORE_WINDOW && lastTapTime !== 0) {
+        return;
+      }
+
+      if (now - lastTapTime < DOUBLE_TAP_DELAY && lastTapTime !== 0) {
+        // Double tap confirmed: Toggle Fullscreen
         if (tapTimeout) {
           clearTimeout(tapTimeout);
           tapTimeout = null;
         }
         toggleFsRef.current();
-        lastTapTime = 0;
+        lastTapTime = 0; // Reset to prevent triple-tap complications
       } else {
         lastTapTime = now;
         tapTimeout = setTimeout(() => {
-          tapTimeout = null;
-          // Single tap logic: Play/Pause
-          if (art.playing) art.pause();
-          else art.play();
-        }, 250); 
+          if (tapTimeout) { // Only if not cleared by a second tap within the 300ms window
+            tapTimeout = null;
+            // Single tap logic: Show controls
+            // This ensures ArtPlayer's built-in controls and our custom FullscreenOverlay appear.
+            if (!art.controls.show) {
+              art.controls.show = true;
+            } else {
+              // If they are already shown, a single tap can be used to hide them immediately
+              art.controls.show = false;
+            }
+          }
+        }, 280); 
       }
     };
 
-    // Use touchstart for immediate response on iOS (bypasses 300ms click delay)
+    // Use a single point of entry for gestures to avoid dual-firing (touchstart + click)
     const container = containerRef.current;
-    container.addEventListener('touchstart', handleTap, { passive: true });
     
-    // Fallback for desktop
-    art.on('click', handleTap);
+    // For mobile, touchstart is more responsive
+    container.addEventListener('touchstart', (e) => {
+      handleTap(e);
+    }, { passive: true });
+    
+    // For desktop, click is standard. We add a check inside handleTap to ignore 
+    // clicks that happen immediately after touchstarts.
+    art.on('click', (e) => {
+      handleTap(e);
+    });
 
     function handleFsChange() {
       const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement);
