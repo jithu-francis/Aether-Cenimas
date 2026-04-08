@@ -58,7 +58,7 @@ export default function FullscreenOverlay({
     if (hideTimeout.current) clearTimeout(hideTimeout.current);
     hideTimeout.current = setTimeout(() => {
       if (!isChatPanelOpen) setShowControls(false);
-    }, 5000);
+    }, 6000);
   }, [isChatPanelOpen]);
 
   useEffect(() => {

@@ -41,6 +41,7 @@ export default function VideoPlayer({
       fullscreenWeb: false,  // Disable built-in
       subtitleOffset: false,
       miniProgressBar: true,
+      autoHide: 6000,
       mutex: true,
       backdrop: true,
       playsInline: true,
@@ -160,7 +161,12 @@ export default function VideoPlayer({
             tapTimeout = null;
             // Single tap logic: Toggle ONLY controls visibility
             if (artInstance.current) {
-              artInstance.current.controls.show = !artInstance.current.controls.show;
+              const art = artInstance.current;
+              art.controls.show = !art.controls.show;
+              if (art.controls.show) {
+                // Manually trigger control visibility logic to reset Artplayer's internal timer
+                art.emit('control', true);
+              }
             }
           }
         }, DOUBLE_TAP_DELAY + 20); 
