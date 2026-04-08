@@ -55,6 +55,7 @@ export default function VideoPlayer({
         preload: "auto",
       },
       click: false, // Disable default play/pause on click
+      dblclick: false, // Explicitly disable built-in double-click to fullscreen
       controls: [
         {
           name: "backward",
@@ -125,43 +126,44 @@ export default function VideoPlayer({
     let lastTapTime = 0;
     let tapTimeout = null;
 
+    let isTouch = false;
+
     const handleTap = (e) => {
-      // Ignore taps on specific UI elements like controls, settings, or chat drawers
-      // We removed '.art-mask' from this list because the mask is the main area where users tap the video.
+      // Ignore taps on specific UI elements like buttons and drawers
       if (e.target.closest('.art-controls') || e.target.closest('.art-setting') || e.target.closest('#chat-drawer')) return;
       
       const now = Date.now();
       const DOUBLE_TAP_DELAY = 300;
-      const EVENT_IGNORE_WINDOW = 50; // Ignore overlapping touch/click events (touchstart + click)
-
-      // If this event is firing immediately after a previous one (e.g. touchstart then click), ignore it
-      if (now - lastTapTime < EVENT_IGNORE_WINDOW && lastTapTime !== 0) {
+      
+      // Prevent dual-firing touchstart + click events
+      if (e.type === 'touchstart') {
+        isTouch = true;
+      } else if (e.type === 'click' && isTouch) {
+        // If we just handled a touchstart, ignore the phantom click
+        setTimeout(() => { isTouch = false; }, 500);
         return;
       }
 
       if (now - lastTapTime < DOUBLE_TAP_DELAY && lastTapTime !== 0) {
-        // Double tap confirmed: Toggle Fullscreen
+        // Double Tap confirmed: Toggle Fullscreen
         if (tapTimeout) {
           clearTimeout(tapTimeout);
           tapTimeout = null;
         }
+        lastTapTime = 0; 
         toggleFsRef.current();
-        lastTapTime = 0; // Reset to prevent triple-tap complications
       } else {
+        // Single Tap potential
         lastTapTime = now;
         tapTimeout = setTimeout(() => {
-          if (tapTimeout) { // Only if not cleared by a second tap within the 300ms window
+          if (tapTimeout) {
             tapTimeout = null;
-            // Single tap logic: Show controls
-            // This ensures ArtPlayer's built-in controls and our custom FullscreenOverlay appear.
-            if (!art.controls.show) {
-              art.controls.show = true;
-            } else {
-              // If they are already shown, a single tap can be used to hide them immediately
-              art.controls.show = false;
+            // Single tap logic: Toggle ONLY controls visibility
+            if (artInstance.current) {
+              artInstance.current.controls.show = !artInstance.current.controls.show;
             }
           }
-        }, 280); 
+        }, DOUBLE_TAP_DELAY + 20); 
       }
     };
 
