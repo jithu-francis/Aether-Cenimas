@@ -61,9 +61,25 @@ export default function FullscreenOverlay({
 
   useEffect(() => {
     if (!isFullscreen) return;
+    
     resetHideTimer();
+
+    // Global interaction detection to wake up controls regardless of where user interacts
+    const handleInteraction = () => {
+      resetHideTimer();
+    };
+
+    window.addEventListener("mousemove", handleInteraction);
+    window.addEventListener("touchstart", handleInteraction, { passive: true });
+    window.addEventListener("mousedown", handleInteraction);
+    window.addEventListener("keydown", handleInteraction);
+
     return () => {
       if (hideTimeout.current) clearTimeout(hideTimeout.current);
+      window.removeEventListener("mousemove", handleInteraction);
+      window.removeEventListener("touchstart", handleInteraction);
+      window.removeEventListener("mousedown", handleInteraction);
+      window.removeEventListener("keydown", handleInteraction);
     };
   }, [isFullscreen, resetHideTimer]);
 
@@ -96,9 +112,7 @@ export default function FullscreenOverlay({
 
   return (
     <div
-      className="absolute inset-0 z-[100] pointer-events-none"
-      onMouseMove={resetHideTimer}
-      onTouchStart={resetHideTimer}
+      className="absolute inset-0 z-[100] pointer-events-none overflow-hidden"
     >
       {/* ── Background dim ─────────────────────────── */}
       <div className={`absolute inset-0 transition-opacity duration-700 ${showControls ? 'bg-gradient-to-b from-black/50 via-transparent to-black/30 opacity-100' : 'opacity-0'}`} />
