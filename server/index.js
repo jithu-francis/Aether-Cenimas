@@ -1,8 +1,13 @@
 const { Server } = require("socket.io");
 const http = require("http");
+const { jwtVerify } = require("jose");
+const cookie = require("cookie");
 
 const PORT = process.env.WS_PORT || 8010;
 const CORS_ORIGIN = process.env.CORS_ORIGIN || "*";
+const JWT_SECRET = new TextEncoder().encode(
+  process.env.JWT_SECRET || "aether-cinema-default-secret-key-32"
+);
 
 const httpServer = http.createServer((req, res) => {
   if (req.url === "/health") {
@@ -31,9 +36,31 @@ const viewers = new Map();
 let syncState = { active: false, masterTime: 0, isPlaying: false };
 
 io.on("connection", (socket) => {
-  socket.on("viewer:join", (data) => {
-    const name = data.name || "Guest";
-    viewers.set(socket.id, { name, joinedAt: new Date() });
+  socket.on("viewer:join", async (data) => {
+    // Parse JWT from cookie in handshake
+    const cookies = cookie.parse(socket.handshake.headers.cookie || "");
+    const token = cookies["aether-session"];
+    
+    let name = data.name || "Guest";
+    let isAuthenticated = false;
+
+    if (token) {
+      try {
+        const { payload } = await jwtVerify(token, JWT_SECRET);
+        name = payload.name;
+        isAuthenticated = true;
+      } catch (error) {
+        console.error(`[Auth] Invalid token from ${socket.id}:`, error.message);
+      }
+    }
+
+    if (!isAuthenticated) {
+      console.log(`[Join Denied] Unauthenticated connection: ${socket.id}`);
+      socket.emit("auth:error", { message: "Authentication required" });
+      return;
+    }
+
+    viewers.set(socket.id, { name, joinedAt: new Date(), isAuthenticated });
     console.log(`[Join] ${name} (${socket.id}) - Total: ${viewers.size}`);
     broadcastViewers();
   });

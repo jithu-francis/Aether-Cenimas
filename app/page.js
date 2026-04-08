@@ -1,7 +1,19 @@
 import LoginForm from "@/components/LoginForm";
+import { cookies } from "next/headers";
+import { verifyToken, COOKIE_NAME } from "@/lib/auth";
+import { redirect } from "next/navigation";
 
-export default function HomePage() {
+export default async function HomePage() {
+  // Check if user is already logged in
+  const token = cookies().get(COOKIE_NAME)?.value;
+  const payload = await verifyToken(token);
+  
+  if (payload) {
+    redirect("/cinema");
+  }
+
   return (
+
     <main className="cinema-bg min-h-screen flex items-center justify-center p-6 relative overflow-hidden">
       <div className="cinema-bg-overlay" />
       

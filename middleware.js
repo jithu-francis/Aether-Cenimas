@@ -1,28 +1,21 @@
 import { NextResponse } from "next/server";
-import { jwtVerify } from "jose";
-
-const SECRET = new TextEncoder().encode(
-  process.env.JWT_SECRET || "aether-cinema-default-secret-key-32"
-);
+import { verifyToken, COOKIE_NAME } from "@/lib/auth";
 
 export async function middleware(request) {
   const { pathname } = request.nextUrl;
 
-  // Only protect /cinema routes
+  // Protect /cinema routes
   if (pathname.startsWith("/cinema")) {
-    const token = request.cookies.get("aether-session")?.value;
+    const token = request.cookies.get(COOKIE_NAME)?.value;
+    const payload = await verifyToken(token);
 
-    if (!token) {
-      return NextResponse.redirect(new URL("/", request.url));
-    }
-
-    try {
-      await jwtVerify(token, SECRET);
-      return NextResponse.next();
-    } catch {
-      // Invalid/expired token
+    if (!payload) {
+      // Invalid/missing/expired token
       const response = NextResponse.redirect(new URL("/", request.url));
-      response.cookies.set("aether-session", "", { maxAge: 0, path: "/" });
+      if (token) {
+        // Clear cookies if token is invalid
+        response.cookies.delete(COOKIE_NAME);
+      }
       return response;
     }
   }

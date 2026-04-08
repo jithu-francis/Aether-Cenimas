@@ -1,9 +1,5 @@
 import { NextResponse } from "next/server";
-import { SignJWT } from "jose";
-
-const SECRET = new TextEncoder().encode(
-  process.env.JWT_SECRET || "aether-cinema-default-secret-key-32"
-);
+import { signToken, COOKIE_NAME, getCookieOptions } from "@/lib/auth";
 
 export async function POST(request) {
   try {
@@ -32,25 +28,15 @@ export async function POST(request) {
     }
 
     // Sign JWT
-    const token = await new SignJWT({ name: name.trim() })
-      .setProtectedHeader({ alg: "HS256" })
-      .setIssuedAt()
-      .setExpirationTime("24h")
-      .sign(SECRET);
+    const token = await signToken(name);
 
-    // Set httpOnly cookie
+    // Set auth cookie
     const response = NextResponse.json({
       success: true,
       name: name.trim(),
     });
 
-    response.cookies.set("aether-session", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: 60 * 60 * 24, // 24h
-      path: "/",
-    });
+    response.cookies.set(COOKIE_NAME, token, getCookieOptions());
 
     return response;
   } catch (error) {

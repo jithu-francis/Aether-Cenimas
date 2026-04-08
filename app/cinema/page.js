@@ -1,11 +1,7 @@
 import { cookies } from "next/headers";
-import { jwtVerify } from "jose";
 import { redirect } from "next/navigation";
 import CinemaClient from "@/components/CinemaClient";
-
-const SECRET = new TextEncoder().encode(
-  process.env.JWT_SECRET || "aether-cinema-default-secret-key-32"
-);
+import { verifyToken, COOKIE_NAME } from "@/lib/auth";
 
 export const metadata = {
   title: "Aether Cinema — Now Showing",
@@ -15,19 +11,12 @@ export const metadata = {
 export default async function CinemaPage() {
   // Server-side auth check
   const cookieStore = cookies();
-  const token = cookieStore.get("aether-session")?.value;
+  const token = cookieStore.get(COOKIE_NAME)?.value;
+  const payload = await verifyToken(token);
 
-  if (!token) {
+  if (!payload) {
     redirect("/");
   }
 
-  let userName = "Guest";
-  try {
-    const { payload } = await jwtVerify(token, SECRET);
-    userName = payload.name;
-  } catch {
-    redirect("/");
-  }
-
-  return <CinemaClient userName={userName} />;
+  return <CinemaClient userName={payload.name} />;
 }

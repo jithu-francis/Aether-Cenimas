@@ -1,31 +1,19 @@
 import { NextResponse } from "next/server";
-import { jwtVerify } from "jose";
-
-const SECRET = new TextEncoder().encode(
-  process.env.JWT_SECRET || "aether-cinema-default-secret-key-32"
-);
+import { verifyToken, COOKIE_NAME } from "@/lib/auth";
 
 export async function GET(request) {
-  try {
-    const token = request.cookies.get("aether-session")?.value;
+  const token = request.cookies.get(COOKIE_NAME)?.value;
+  const payload = await verifyToken(token);
 
-    if (!token) {
-      return NextResponse.json(
-        { authenticated: false },
-        { status: 401 }
-      );
-    }
-
-    const { payload } = await jwtVerify(token, SECRET);
-
-    return NextResponse.json({
-      authenticated: true,
-      name: payload.name,
-    });
-  } catch (error) {
+  if (!payload) {
     return NextResponse.json(
       { authenticated: false },
       { status: 401 }
     );
   }
+
+  return NextResponse.json({
+    authenticated: true,
+    name: payload.name,
+  });
 }
