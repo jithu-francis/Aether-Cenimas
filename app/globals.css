@@ -429,4 +429,26 @@
   .art-control-progress {
     padding: 0 8px !important;
   }
+
+  /* Force fullscreen button visibility on mobile */
+  .art-control-fullscreen {
+    display: flex !important;
+  }
+
+  /* Ensure controls are reachable and not blocked by native elements */
+  .art-controls {
+    padding-bottom: env(safe-area-inset-bottom, 8px) !important;
+    height: calc(50px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+}
+
+/* Ensure the player container fills the screen in web-fullscreen */
+.art-fullscreen-web {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 9999 !important;
+  border-radius: 0 !important;
 }

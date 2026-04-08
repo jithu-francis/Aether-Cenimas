@@ -175,9 +175,9 @@ export default function FullscreenOverlay({
       {/* ── BOTTOM REACTION BAR (Premium Floating) ──── */}
       {/* ═══════════════════════════════════════════════ */}
       <div
-        className={`absolute bottom-[72px] sm:bottom-20 left-1/2 -translate-x-1/2 transition-all duration-700 pointer-events-auto ${
+        className={`absolute bottom-24 sm:bottom-28 left-1/2 -translate-x-1/2 transition-all duration-700 ${
           showControls && !isChatPanelOpen
-            ? "opacity-100 translate-y-0 scale-100"
+            ? "opacity-100 translate-y-0 scale-100 pointer-events-auto"
             : "opacity-0 translate-y-4 scale-90 pointer-events-none"
         }`}
       >

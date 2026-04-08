@@ -45,10 +45,10 @@ export default function VideoPlayer({
       backdrop: true,
       playsInline: true,
       autoPlayback: true,
-      airplay: true,
+      airplay: false, // Removed as per user request (extra control on iPhone)
       theme: "#3b82f6",
       hotkey: true,
-      lock: true,
+      lock: false, // Disable built-in lock to avoid mobile gesture conflicts
       fastForward: true,
       moreVideoAttr: {
         crossOrigin: "anonymous",
@@ -113,45 +113,33 @@ export default function VideoPlayer({
 
     toggleFsRef.current = toggleFullscreen;
 
-    // --- Mobile Double-Tap (Direct touch detection) ---
-    const container = containerRef.current;
-    let lastTapTime = 0;
-    
-    const handleTouchStart = (e) => {
+    // --- Refined Gesture Handling (optimized for iOS) ---
+    let lastClickTime = 0;
+    let clickTimer = null;
+
+    art.on('click', (e) => {
+      // Ignore clicks on controls area or settings
+      if (e.target.closest('.art-controls') || e.target.closest('.art-setting') || e.target.closest('.art-mask')) return;
+      
       const now = Date.now();
       const DOUBLE_TAP_DELAY = 300;
-      
-      if (now - lastTapTime < DOUBLE_TAP_DELAY) {
-        // Double tap confirmed: stop propagation and toggle fullscreen
-        e.preventDefault();
-        toggleFullscreen();
-        lastTapTime = 0; // Reset
-      } else {
-        lastTapTime = now;
-      }
-    };
 
-    if (container) {
-      container.addEventListener('touchstart', handleTouchStart, { passive: false });
-    }
-
-    let clickTimer = null;
-    art.on('click', (e) => {
-      // Ignore clicks on controls area
-      if (e.target.closest('.art-controls') || e.target.closest('.art-setting')) return;
-      
-      if (clickTimer) {
-        // Double click/tap detected (Desktop fallback)
-        clearTimeout(clickTimer);
-        clickTimer = null;
+      if (now - lastClickTime < DOUBLE_TAP_DELAY) {
+        // Double tap sequence confirmed
+        if (clickTimer) {
+          clearTimeout(clickTimer);
+          clickTimer = null;
+        }
         toggleFullscreen();
+        lastClickTime = 0;
       } else {
+        lastClickTime = now;
         clickTimer = setTimeout(() => {
           clickTimer = null;
-          // Single click: Toggle playback
+          // Single click logic
           if (art.playing) art.pause();
           else art.play();
-        }, 280); 
+        }, 250); // Slightly faster response
       }
     });
 
@@ -215,7 +203,7 @@ export default function VideoPlayer({
     return () => {
       clearTimeout(seekDebounce.current);
       if (container) {
-        container.removeEventListener('touchstart', handleTouchStart);
+        // No specific touch listener needed here anymore, art.on('click') handles it better now
       }
       document.removeEventListener("fullscreenchange", handleFsChange);
       document.removeEventListener("webkitfullscreenchange", handleFsChange);
