@@ -1,3 +1,4 @@
+require('dotenv').config();
 const { Server } = require("socket.io");
 const http = require("http");
 const { jwtVerify } = require("jose");
@@ -23,7 +24,7 @@ const httpServer = http.createServer((req, res) => {
 
 const io = new Server(httpServer, {
   cors: {
-    origin: CORS_ORIGIN === "*" ? true : CORS_ORIGIN.split(","),
+    origin: true, // Allow reflective origin for easier local network testing
     methods: ["GET", "POST"],
     credentials: true,
   },
@@ -60,7 +61,7 @@ io.on("connection", (socket) => {
       return;
     }
 
-    viewers.set(socket.id, { name, joinedAt: new Date(), isAuthenticated });
+    viewers.set(socket.id, { id: socket.id, name, joinedAt: new Date(), isAuthenticated });
     console.log(`[Join] ${name} (${socket.id}) - Total: ${viewers.size}`);
     broadcastViewers();
   });

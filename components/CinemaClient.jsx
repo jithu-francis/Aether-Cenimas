@@ -10,6 +10,7 @@ import { useViewers } from "@/lib/useViewers";
 import { useReactions } from "@/lib/useReactions";
 import SyncControls from "./SyncControls";
 import ChatDrawer from "./ChatDrawer";
+import FeatureWalkthrough from "./FeatureWalkthrough";
 import ViewersList from "./ViewersList";
 import FullscreenOverlay from "./FullscreenOverlay";
 import ReactionSystem from "./ReactionSystem";
@@ -52,8 +53,26 @@ export default function CinemaClient({ userName }) {
   const { viewers } = useViewers();
   const { reactions, sendReaction, clearReactions } = useReactions();
 
+  // Walkthrough State
+  const [walkthroughOpen, setWalkthroughOpen] = useState(false);
+
   // Combined state for messaging availability
   const canMessage = isSynced && !isStandalone;
+
+  // Auto-trigger walkthrough for New Users
+  useEffect(() => {
+    const hasSeen = localStorage.getItem("aether-has-seen-walkthrough");
+    if (!hasSeen) {
+      // Delay slightly for better transition
+      const timer = setTimeout(() => setWalkthroughOpen(true), 1500);
+      return () => clearTimeout(timer);
+    }
+  }, []);
+
+  const handleCloseWalkthrough = () => {
+    localStorage.setItem("aether-has-seen-walkthrough", "true");
+    setWalkthroughOpen(false);
+  };
 
   // Connect socket on mount
   useEffect(() => {
@@ -238,12 +257,18 @@ export default function CinemaClient({ userName }) {
                     viewerCount={viewers.length}
                     onInitSync={handleInitSync}
                     onStopSync={handleStopSync}
+                    onShowHelp={() => setWalkthroughOpen(true)}
                   />
 
                   <div className="flex items-center gap-2 sm:gap-3 text-[9px] sm:text-[10px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap justify-center sm:justify-end">
                     <div className={`w-2 h-2 rounded-full flex-shrink-0 ${isSynced ? 'bg-accent-blue animate-pulse' : 'bg-slate-700'}`} />
                     {isSynced ? "Real-time sync active" : "Sync inactive"}
                   </div>
+                </div>
+
+                {/* Mobile Viewers List — Visible only on mobile/tablet */}
+                <div className="block md:hidden">
+                  <ViewersList viewers={viewers} currentUser={userName} />
                 </div>
 
                 {/* Movie Info Card */}
@@ -319,7 +344,10 @@ export default function CinemaClient({ userName }) {
                   </div>
                 </div>
 
-                <ViewersList viewers={viewers} currentUser={userName} />
+                {/* Desktop Viewers List — Hidden on mobile, visible only on md+ screens */}
+                <div className="hidden md:block">
+                  <ViewersList viewers={viewers} currentUser={userName} />
+                </div>
               </div>
             </div>
           </div>
@@ -334,6 +362,11 @@ export default function CinemaClient({ userName }) {
         onSendMessage={sendMessage}
         userName={userName}
         canMessage={canMessage}
+      />
+
+      <FeatureWalkthrough
+        isOpen={walkthroughOpen}
+        onClose={handleCloseWalkthrough}
       />
     </div>
   );

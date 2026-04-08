@@ -96,52 +96,67 @@ export default function VideoPlayer({
       const video = art.video;
       if (!wrapper || !video) return;
 
-      if (document.fullscreenElement || document.webkitFullscreenElement) {
+      // Check if we are already in some form of fullscreen
+      const isNativeFs = !!(document.fullscreenElement || document.webkitFullscreenElement);
+      const isWebFs = wrapper.classList.contains("art-fullscreen-web");
+
+      if (isNativeFs || isWebFs) {
+        // Exit logic
         if (document.exitFullscreen) document.exitFullscreen();
         else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+        wrapper.classList.remove("art-fullscreen-web");
+        document.body.style.overflow = "";
       } else {
+        // Enter logic
         const promise = wrapper.requestFullscreen?.() || wrapper.webkitRequestFullscreen?.();
+        
         promise?.catch(() => {
-          if (video.webkitEnterFullscreen) {
-            video.webkitEnterFullscreen();
-          } else {
-            wrapper.classList.toggle("art-fullscreen-web");
-          }
+          // If native fullscreen fails (common on iPhone), fallback to Web Fullscreen
+          // which keeps our custom HTML overlays (reactions, chat, sync) visible.
+          wrapper.classList.add("art-fullscreen-web");
+          document.body.style.overflow = "hidden";
         });
       }
     }
 
     toggleFsRef.current = toggleFullscreen;
 
-    // --- Refined Gesture Handling (optimized for iOS) ---
-    let lastClickTime = 0;
-    let clickTimer = null;
+    // --- Refined Gesture Handling (Optimized for iPhone/iOS) ---
+    let lastTapTime = 0;
+    let tapTimeout = null;
 
-    art.on('click', (e) => {
-      // Ignore clicks on controls area or settings
-      if (e.target.closest('.art-controls') || e.target.closest('.art-setting') || e.target.closest('.art-mask')) return;
+    const handleTap = (e) => {
+      // Ignore taps on controls, settings, or chat
+      if (e.target.closest('.art-controls') || e.target.closest('.art-setting') || e.target.closest('.art-mask') || e.target.closest('#chat-drawer')) return;
       
       const now = Date.now();
       const DOUBLE_TAP_DELAY = 300;
 
-      if (now - lastClickTime < DOUBLE_TAP_DELAY) {
-        // Double tap sequence confirmed
-        if (clickTimer) {
-          clearTimeout(clickTimer);
-          clickTimer = null;
+      if (now - lastTapTime < DOUBLE_TAP_DELAY) {
+        // Double tap confirmed
+        if (tapTimeout) {
+          clearTimeout(tapTimeout);
+          tapTimeout = null;
         }
-        toggleFullscreen();
-        lastClickTime = 0;
+        toggleFsRef.current();
+        lastTapTime = 0;
       } else {
-        lastClickTime = now;
-        clickTimer = setTimeout(() => {
-          clickTimer = null;
-          // Single click logic
+        lastTapTime = now;
+        tapTimeout = setTimeout(() => {
+          tapTimeout = null;
+          // Single tap logic: Play/Pause
           if (art.playing) art.pause();
           else art.play();
-        }, 250); // Slightly faster response
+        }, 250); 
       }
-    });
+    };
+
+    // Use touchstart for immediate response on iOS (bypasses 300ms click delay)
+    const container = containerRef.current;
+    container.addEventListener('touchstart', handleTap, { passive: true });
+    
+    // Fallback for desktop
+    art.on('click', handleTap);
 
     function handleFsChange() {
       const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement);
@@ -202,7 +217,7 @@ export default function VideoPlayer({
 
     return () => {
       clearTimeout(seekDebounce.current);
-      if (container) {
+      if (containerRef.current) {
         // No specific touch listener needed here anymore, art.on('click') handles it better now
       }
       document.removeEventListener("fullscreenchange", handleFsChange);

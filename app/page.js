@@ -5,7 +5,8 @@ import { redirect } from "next/navigation";
 
 export default async function HomePage() {
   // Check if user is already logged in
-  const token = cookies().get(COOKIE_NAME)?.value;
+  const cookieStore = await cookies();
+  const token = cookieStore.get(COOKIE_NAME)?.value;
   const payload = await verifyToken(token);
   
   if (payload) {

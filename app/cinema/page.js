@@ -10,11 +10,15 @@ export const metadata = {
 
 export default async function CinemaPage() {
   // Server-side auth check
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const token = cookieStore.get(COOKIE_NAME)?.value;
+  console.log(`[CinemaPage] Token found: ${!!token}`);
+  
   const payload = await verifyToken(token);
+  console.log(`[CinemaPage] Payload verified: ${!!payload}`);
 
   if (!payload) {
+    console.log("[CinemaPage] Redirecting to Home due to invalid payload");
     redirect("/");
   }
 

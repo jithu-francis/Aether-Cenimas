@@ -6,13 +6,24 @@ export default function SyncControls({
   setIsStandalone, 
   viewerCount, 
   onInitSync, 
-  onStopSync 
+  onStopSync,
+  onShowHelp
 }) {
   const canStartSync = viewerCount > 1;
 
   return (
     <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 sm:gap-6 w-full sm:w-auto">
       <div className="flex flex-wrap items-center gap-3 flex-1 sm:flex-none">
+        {/* Help Icon */}
+        <button
+          onClick={onShowHelp}
+          className="p-2 sm:p-2.5 rounded-xl bg-white/[0.03] border border-white/5 text-slate-500 hover:text-white hover:bg-white/10 transition-all group shadow-sm flex-shrink-0"
+          title="Show Help"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 sm:h-5 sm:w-5 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </button>
         {/* Main Toggle Button */}
         {isSynced ? (
           <button
