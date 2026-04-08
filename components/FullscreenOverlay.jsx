@@ -39,6 +39,8 @@ export default function FullscreenOverlay({
   onSendMessage,
   viewers,
   userName,
+  canMessage,
+  isStandalone,
 }) {
   const [showControls, setShowControls] = useState(true);
   const [chatInput, setChatInput] = useState("");
@@ -172,10 +174,12 @@ export default function FullscreenOverlay({
 
             {/* Chat toggle */}
             <button
-              onClick={() => setIsChatPanelOpen(!isChatPanelOpen)}
+              onClick={() => canMessage && setIsChatPanelOpen(!isChatPanelOpen)}
               className={`p-2 sm:p-2.5 rounded-xl fs-control-pill transition-all duration-300 ${
+                !canMessage ? "opacity-20 cursor-not-allowed" :
                 isChatPanelOpen ? "text-accent-blue bg-accent-blue/15 border-accent-blue/30" : "text-white/40 hover:text-white hover:bg-white/10"
               }`}
+              title={canMessage ? "Toggle Chat" : "Sync required for chat"}
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
@@ -190,7 +194,7 @@ export default function FullscreenOverlay({
       {/* ═══════════════════════════════════════════════ */}
       <div
         className={`absolute bottom-24 sm:bottom-28 left-1/2 -translate-x-1/2 transition-all duration-700 ${
-          showControls && !isChatPanelOpen
+          showControls && !isChatPanelOpen && canMessage
             ? "opacity-100 translate-y-0 scale-100 pointer-events-auto"
             : "opacity-0 translate-y-4 scale-90 pointer-events-none"
         }`}
@@ -246,7 +250,18 @@ export default function FullscreenOverlay({
           
           {/* Chat messages */}
           <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 sm:px-5 py-3 space-y-3 scroll-smooth">
-            {messages.length === 0 ? (
+            {!canMessage ? (
+              <div className="flex flex-col items-center justify-center h-full text-center p-6 opacity-40">
+                <div className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center mb-4">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white/40" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                  </svg>
+                </div>
+                <p className="text-[10px] font-black text-white uppercase tracking-widest leading-relaxed">
+                  Join sync session<br/>to access chat
+                </p>
+              </div>
+            ) : messages.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-full text-center opacity-40">
                 <p className="text-xs font-bold text-white/50 uppercase tracking-widest">No messages</p>
               </div>
@@ -282,11 +297,12 @@ export default function FullscreenOverlay({
                 type="text"
                 value={chatInput}
                 onChange={(e) => setChatInput(e.target.value)}
-                placeholder="Message..."
-                className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl px-3 py-2.5 text-sm text-white placeholder:text-white/20 outline-none focus:border-accent-blue/40 focus:bg-white/[0.06] transition-all pr-10"
+                disabled={!canMessage}
+                placeholder={canMessage ? "Message..." : "Sync required..."}
+                className={`w-full bg-white/[0.04] border border-white/[0.08] rounded-xl px-3 py-2.5 text-sm text-white placeholder:text-white/20 outline-none focus:border-accent-blue/40 focus:bg-white/[0.06] transition-all pr-10 ${!canMessage ? 'opacity-20 cursor-not-allowed' : ''}`}
                 autoComplete="off"
               />
-              <button type="submit" className="absolute right-2 top-1/2 -translate-y-1/2 text-accent-blue opacity-40 group-focus-within:opacity-100 transition-opacity p-1">
+              <button type="submit" disabled={!canMessage} className={`absolute right-2 top-1/2 -translate-y-1/2 text-accent-blue transition-opacity p-1 ${canMessage ? 'opacity-40 group-focus-within:opacity-100' : 'opacity-10'}`}>
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
                 </svg>

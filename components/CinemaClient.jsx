@@ -39,6 +39,8 @@ export default function CinemaClient({ userName }) {
   // Hooks
   const {
     isSynced,
+    isStandalone,
+    setIsStandalone,
     isRemoteAction,
     initSync,
     stopSync,
@@ -50,16 +52,24 @@ export default function CinemaClient({ userName }) {
   const { viewers } = useViewers();
   const { reactions, sendReaction, clearReactions } = useReactions();
 
+  // Combined state for messaging availability
+  const canMessage = isSynced && !isStandalone;
+
   // Connect socket on mount
   useEffect(() => {
     connectSocket(userName);
     return () => disconnectSocket();
   }, [userName]);
 
-  // Always start fresh on sync START
+  // Handle message clearing on sync STOP
   const prevSynced = useRef(false);
   useEffect(() => {
     if (isSynced && !prevSynced.current) {
+      clearMessages();
+      clearReactions();
+    }
+    // NEW: Clear messages for everyone when sync stops globally
+    if (!isSynced && prevSynced.current) {
       clearMessages();
       clearReactions();
     }
@@ -195,6 +205,8 @@ export default function CinemaClient({ userName }) {
                   <FullscreenOverlay
                     isFullscreen={isFullscreen}
                     isSynced={isSynced}
+                    isStandalone={isStandalone}
+                    canMessage={canMessage}
                     onInitSync={handleInitSync}
                     onStopSync={handleStopSync}
                     messages={messages}
@@ -221,6 +233,9 @@ export default function CinemaClient({ userName }) {
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-6 glass-panel p-4 sm:p-6 border-white/[0.05]">
                   <SyncControls
                     isSynced={isSynced}
+                    isStandalone={isStandalone}
+                    setIsStandalone={setIsStandalone}
+                    viewerCount={viewers.length}
                     onInitSync={handleInitSync}
                     onStopSync={handleStopSync}
                   />
@@ -318,6 +333,7 @@ export default function CinemaClient({ userName }) {
         messages={messages}
         onSendMessage={sendMessage}
         userName={userName}
+        canMessage={canMessage}
       />
     </div>
   );

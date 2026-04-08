@@ -8,6 +8,7 @@ export default function ChatDrawer({
   messages,
   onSendMessage,
   userName,
+  canMessage,
 }) {
   const [input, setInput] = useState("");
   const messagesEndRef = useRef(null);
@@ -21,7 +22,7 @@ export default function ChatDrawer({
 
   const handleSend = (e) => {
     e.preventDefault();
-    if (!input.trim()) return;
+    if (!input.trim() || !canMessage) return;
     onSendMessage(input);
     setInput("");
   };
@@ -62,7 +63,19 @@ export default function ChatDrawer({
 
           {/* Messages */}
           <div className="flex-1 overflow-y-auto p-8 space-y-6 scroll-smooth">
-            {messages.length === 0 ? (
+            {!canMessage ? (
+              <div className="flex flex-col items-center justify-center h-full text-center p-6 bg-white/[0.01] rounded-[2rem] border border-dashed border-white/5">
+                <div className="w-16 h-16 rounded-full bg-accent-blue/5 flex items-center justify-center mb-6 border border-accent-blue/10 animate-pulse">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-accent-blue/40" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25-2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                  </svg>
+                </div>
+                <h3 className="text-xs font-black text-white uppercase tracking-[0.2em] mb-2">Chat Restricted</h3>
+                <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest leading-relaxed">
+                  Join a synchronization session to chat with others.
+                </p>
+              </div>
+            ) : messages.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-full text-center">
                 <div className="w-16 h-16 rounded-full bg-white/[0.02] flex items-center justify-center mb-4 border border-white/[0.05]">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-slate-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -106,14 +119,16 @@ export default function ChatDrawer({
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Say something..."
-                className="glass-input pr-14 text-sm font-medium"
+                disabled={!canMessage}
+                placeholder={canMessage ? "Say something..." : "Sync to chat..."}
+                className={`glass-input pr-14 text-sm font-medium ${!canMessage ? 'opacity-30 cursor-not-allowed' : ''}`}
                 id="chat-input"
                 autoComplete="off"
               />
               <button
                 type="submit"
-                className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-xl bg-accent-blue/20 text-accent-blue flex items-center justify-center hover:bg-accent-blue/30 transition-all border border-accent-blue/20 group-focus-within:scale-100 scale-90 opacity-40 group-focus-within:opacity-100"
+                disabled={!canMessage}
+                className={`absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-xl bg-accent-blue/20 text-accent-blue flex items-center justify-center hover:bg-accent-blue/30 transition-all border border-accent-blue/20 ${canMessage ? 'group-focus-within:scale-100 scale-90 opacity-40 group-focus-within:opacity-100' : 'opacity-10 scale-90'}`}
                 id="chat-send-btn"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
