@@ -321,6 +321,23 @@ export default function CinemaClient({ userName }) {
                           <span className="text-slate-300">Naslen, Lijomol Jose</span>
                         </div>
                       </div>
+
+                      <div className="pt-6">
+                        <a 
+                          href="/api/download"
+                          className="inline-flex items-center justify-center gap-3 px-6 py-3 rounded-xl bg-white/[0.03] border border-white/10 hover:border-accent-blue/50 hover:bg-accent-blue/10 text-white font-bold text-sm tracking-wide shadow-lg hover:shadow-accent-blue/20 hover:-translate-y-0.5 active:scale-95 transition-all outline-none group"
+                        >
+                          <div className="p-1.5 rounded-lg bg-accent-blue/20 text-accent-blue group-hover:bg-accent-blue group-hover:text-white transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                            </svg>
+                          </div>
+                          <div className="flex flex-col items-start pr-2">
+                            <span className="text-[10px] text-slate-400 group-hover:text-accent-blue/80 uppercase tracking-widest transition-colors mb-0.5">Watch Offline</span>
+                            <span className="text-sm leading-none">Download Movie</span>
+                          </div>
+                        </a>
+                      </div>
                     </div>
                   </div>
                 </div>
